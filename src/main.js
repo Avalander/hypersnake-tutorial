@@ -47,6 +47,7 @@ const state = {
 		{ x: 1 * SIZE, y: 3 * SIZE},
 	],
 	direction: 'right',
+	next_direction: 'right',
 }
 
 const actions = {
@@ -56,6 +57,7 @@ const actions = {
 		action('frame'),
 	],
 	frame: () => [
+		action('updateDirection'),
 		action('updateSnake'),
 		delay(SPEED, 'frame'),
 	],
@@ -63,6 +65,10 @@ const actions = {
 	updateSnake: () => state => ({
 		...state,
 		snake: updateSnake(state.snake, state.direction),
+	}),
+	updateDirection: () => state => ({
+		...state,
+		direction: state.next_direction,
 	}),
 	// Keyboard
 	keyPressed: ({ key }) =>
@@ -72,8 +78,8 @@ const actions = {
 		),
 	changeDirection: direction => state => ({
 		...state,
-		direction: (direction === OPPOSITE_DIRECTION[state.direction]
-			? state.direction
+		next_direction: (direction === OPPOSITE_DIRECTION[state.direction]
+			? state.next_direction
 			: direction
 		)
 	}),
