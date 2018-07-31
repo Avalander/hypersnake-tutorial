@@ -72,6 +72,7 @@ const actions = {
 	frame: () => [
 		action('updateDirection'),
 		action('updateSnake'),
+		action('checkEatApple'),
 		delay(UPDATE_INTERVAL, 'frame'),
 	],
 	// Update
@@ -82,6 +83,20 @@ const actions = {
 	updateDirection: () => state => ({
 		...state,
 		direction: state.next_direction,
+	}),
+	checkEatApple: () => state =>
+		(collision(state.snake[0], state.apple)
+			? [ action('eatApple'),
+				action('relocateApple'), ]
+			: []
+		),
+	eatApple: () => state => ({
+		...state,
+		snake: growSnake(state.snake),
+	}),
+	relocateApple: () => state => ({
+		...state,
+		apple: createApple(),
 	}),
 	// Keyboard
 	keyPressed: ({ key }) =>
@@ -98,6 +113,9 @@ const actions = {
 	}),
 }
 
+const collision = (a, b) =>
+	a.x === b.x && a.y === b.y
+
 const updateSnake = (snake, direction) => {
 	for (let i = snake.length - 1; i > 0; i--) {
 		snake[i].x = snake[i - 1].x
@@ -109,6 +127,12 @@ const updateSnake = (snake, direction) => {
 
 	return snake
 }
+
+const growSnake = snake =>
+	[ ...snake, {
+		x: snake[snake.length - 1].x,
+		y: snake[snake.length - 1].y,
+	}]
 
 const view = state =>
 	svg({ viewBox: `0 0 ${WIDTH} ${HEIGHT}`, width: WIDTH, height: HEIGHT}, [
