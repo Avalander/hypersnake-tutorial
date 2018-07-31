@@ -133,7 +133,7 @@ const collision = (a, b) =>
 	a.x === b.x && a.y === b.y
 
 const isOutOfBounds = ({ x, y }) =>
-	x < 0 || x > WIDTH || y < 0 || y > HEIGHT
+	x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT
 
 const selfCollision = ([ head, ...tail ]) =>
 	tail.some(({ x, y }) =>
