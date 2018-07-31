@@ -16,7 +16,7 @@ const COLORS = {
 	},
 }
 
-const SPEED = 150
+const UPDATE_INTERVAL = 150
 
 const DIRECTIONS = {
 	left: { x: -1, y: 0 },
@@ -59,7 +59,7 @@ const actions = {
 	frame: () => [
 		action('updateDirection'),
 		action('updateSnake'),
-		delay(SPEED, 'frame'),
+		delay(UPDATE_INTERVAL, 'frame'),
 	],
 	// Update
 	updateSnake: () => state => ({
