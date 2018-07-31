@@ -1,6 +1,6 @@
 import { app } from 'hyperapp'
 import { withFx, delay, action, keydown } from '@hyperapp/fx'
-import { g, rect, svg } from './svg';
+import { g, rect, svg, text } from './svg';
 
 
 const SIZE = 15
@@ -61,6 +61,7 @@ const state = {
 	direction: 'right',
 	next_direction: 'right',
 	apple: createApple(),
+	score: 0,
 }
 
 const actions = {
@@ -87,7 +88,8 @@ const actions = {
 	checkEatApple: () => state =>
 		(collision(state.snake[0], state.apple)
 			? [ action('eatApple'),
-				action('relocateApple'), ]
+				action('relocateApple'),
+				action('updateScore', 10) ]
 			: []
 		),
 	eatApple: () => state => ({
@@ -97,6 +99,10 @@ const actions = {
 	relocateApple: () => state => ({
 		...state,
 		apple: createApple(),
+	}),
+	updateScore: value => state => ({
+		...state,
+		score: state.score + value
 	}),
 	// Keyboard
 	keyPressed: ({ key }) =>
@@ -139,6 +145,7 @@ const view = state =>
 		Background(),
 		Apple(state.apple),
 		Snake(state.snake),
+		Score(state.score),
 	])
 
 const Background = () =>
@@ -164,6 +171,21 @@ const Apple = ({ x, y }) =>
 			stroke: COLORS.apple.stroke,
 			'stroke-width': 2
 		})
+	])
+
+const score_style = {
+	font: 'bold 20px sans-seriff',
+	fill: '#fff',
+	opacity: 0.8,
+}
+
+const Score = state =>
+	g({ key: 'score' }, [
+		text({
+			style: score_style,
+			x: 5,
+			y: 20,
+		}, state)
 	])
 
 const game = withFx(app) (state, actions, view, document.body)
