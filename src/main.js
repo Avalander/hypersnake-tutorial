@@ -13,6 +13,10 @@ const COLORS = {
 		fill: '#bcaba0',
 		stroke: '#706660',
 	},
+	apple: {
+		fill: '#ff5a5f',
+		stroke: '#b23e42',
+	},
 }
 
 const UPDATE_INTERVAL = 150
@@ -39,6 +43,15 @@ const OPPOSITE_DIRECTION = {
 }
 
 
+const randInt = (from, to) =>
+	Math.floor(Math.random() * (to - from) + from)
+
+const createApple = () =>
+	({
+		x: randInt(0, WIDTH/SIZE) * SIZE,
+		y: randInt(0, HEIGHT/SIZE) * SIZE,
+	})
+
 const state = {
 	snake: [
 		{ x: 3 * SIZE, y: 3 * SIZE},
@@ -47,6 +60,7 @@ const state = {
 	],
 	direction: 'right',
 	next_direction: 'right',
+	apple: createApple(),
 }
 
 const actions = {
@@ -99,6 +113,7 @@ const updateSnake = (snake, direction) => {
 const view = state =>
 	svg({ viewBox: `0 0 ${WIDTH} ${HEIGHT}`, width: WIDTH, height: HEIGHT}, [
 		Background(),
+		Apple(state.apple),
 		Snake(state.snake),
 	])
 
@@ -116,6 +131,16 @@ const Snake = state =>
 			'stroke-width': 2
 		}))
 	)
+
+const Apple = ({ x, y }) =>
+	g({ key: 'apple' }, [
+		rect({
+			x, y, width: SIZE, height: SIZE,
+			fill: COLORS.apple.fill,
+			stroke: COLORS.apple.stroke,
+			'stroke-width': 2
+		})
+	])
 
 const game = withFx(app) (state, actions, view, document.body)
 
