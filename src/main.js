@@ -1,6 +1,5 @@
 import { app } from 'hyperapp'
 import { withFx, delay, action, keydown } from '@hyperapp/fx'
-import { div } from '@hyperapp/html'
 import { g, rect, svg } from './svg';
 
 
@@ -98,11 +97,9 @@ const updateSnake = (snake, direction) => {
 }
 
 const view = state =>
-	div([
-		svg({ viewBox: `0 0 ${WIDTH} ${HEIGHT}`, width: WIDTH, height: HEIGHT}, [
-			Background(),
-			Snake(state.snake),
-		]),
+	svg({ viewBox: `0 0 ${WIDTH} ${HEIGHT}`, width: WIDTH, height: HEIGHT}, [
+		Background(),
+		Snake(state.snake),
 	])
 
 const Background = () =>
