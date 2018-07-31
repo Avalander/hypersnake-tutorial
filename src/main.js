@@ -62,6 +62,7 @@ const state = {
 	next_direction: 'right',
 	apple: createApple(),
 	score: 0,
+	is_running: true,
 }
 
 const actions = {
@@ -74,8 +75,13 @@ const actions = {
 		action('updateDirection'),
 		action('updateSnake'),
 		action('checkEatApple'),
-		delay(UPDATE_INTERVAL, 'frame'),
+		action('continue'),
 	],
+	continue: () => state =>
+		(isOutOfBounds(state.snake[0]) || selfCollision(state.snake)
+			? action('updateIsRunning', false)
+			: delay(UPDATE_INTERVAL, 'frame')
+		),
 	// Update
 	updateSnake: () => state => ({
 		...state,
@@ -104,6 +110,10 @@ const actions = {
 		...state,
 		score: state.score + value
 	}),
+	updateIsRunning: value => state => ({
+		...state,
+		is_running: value,
+	}),
 	// Keyboard
 	keyPressed: ({ key }) =>
 		(Object.keys(KEY_TO_DIRECTION).includes(key)
@@ -121,6 +131,14 @@ const actions = {
 
 const collision = (a, b) =>
 	a.x === b.x && a.y === b.y
+
+const isOutOfBounds = ({ x, y }) =>
+	x < 0 || x > WIDTH || y < 0 || y > HEIGHT
+
+const selfCollision = ([ head, ...tail ]) =>
+	tail.some(({ x, y }) =>
+		x === head.x && y === head.y
+	)
 
 const updateSnake = (snake, direction) => {
 	for (let i = snake.length - 1; i > 0; i--) {
@@ -145,7 +163,9 @@ const view = state =>
 		Background(),
 		Apple(state.apple),
 		Snake(state.snake),
-		Score(state.score),
+		state.is_running
+            ? Score(state.score)
+            : GameOver(state.score),
 	])
 
 const Background = () =>
@@ -186,6 +206,38 @@ const Score = state =>
 			x: 5,
 			y: 20,
 		}, state)
+	])
+
+const game_over_style = {
+	title: {
+		font: 'bold 48px sans-seriff',
+		fill: '#fff',
+		opacity: 0.8,
+		'text-anchor': 'middle',
+	},
+	score: {
+		font: '30px sans-seriff',
+		fill: '#fff',
+		opacity: 0.8,
+		'text-anchor': 'middle',
+	}
+}
+
+const GameOver = score =>
+	g({ key: 'game-over'}, [
+		rect({
+			x: 0, y: 0, width: WIDTH, height: HEIGHT,
+			fill: '#000',
+			opacity: 0.4,
+		}),
+		text({
+			style: game_over_style.title,
+			x: WIDTH/2, y: 100,
+		}, 'Game Over'),
+		text({
+			style: game_over_style.score,
+			x: WIDTH/2, y: 160,
+		}, `Score: ${score}`),
 	])
 
 const game = withFx(app) (state, actions, view, document.body)
