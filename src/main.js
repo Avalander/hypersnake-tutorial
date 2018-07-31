@@ -1,6 +1,6 @@
 import { app } from 'hyperapp'
 import { withFx, delay, action, keydown } from '@hyperapp/fx'
-import { g, rect, svg, text } from './svg';
+import { g, rect, svg, text } from './svg'
 
 
 const SIZE = 15
@@ -78,7 +78,7 @@ const actions = {
 		action('continue'),
 	],
 	continue: () => state =>
-		(isOutOfBounds(state.snake[0]) || selfCollision(state.snake)
+		(isOutOfBounds(state.snake[0]) || selfCollision(state.snake)
 			? action('updateIsRunning', false)
 			: delay(UPDATE_INTERVAL, 'frame')
 		),
@@ -132,8 +132,8 @@ const actions = {
 const collision = (a, b) =>
 	a.x === b.x && a.y === b.y
 
-const isOutOfBounds = ({ x, y }) =>
-	x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT
+const isOutOfBounds = ({ x, y }) =>
+	x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT
 
 const selfCollision = ([ head, ...tail ]) =>
 	tail.some(({ x, y }) =>
