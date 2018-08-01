@@ -19,8 +19,6 @@ const COLORS = {
 	},
 }
 
-const UPDATE_INTERVAL = 150
-
 const DIRECTIONS = {
 	left: { x: -1, y: 0 },
 	right: { x: 1, y: 0 },
@@ -46,6 +44,9 @@ const OPPOSITE_DIRECTION = {
 const randInt = (from, to) =>
 	Math.floor(Math.random() * (to - from) + from)
 
+const max = (a, b) =>
+	a > b ? a : b
+
 const createApple = () =>
 	({
 		x: randInt(0, WIDTH/SIZE) * SIZE,
@@ -63,6 +64,7 @@ const state = {
 	apple: createApple(),
 	score: 0,
 	is_running: true,
+	update_interval: 150,
 }
 
 const actions = {
@@ -80,7 +82,7 @@ const actions = {
 	continue: () => state =>
 		(isOutOfBounds(state.snake[0]) || selfCollision(state.snake)
 			? action('updateIsRunning', false)
-			: delay(UPDATE_INTERVAL, 'frame')
+			: delay(state.update_interval, 'frame')
 		),
 	// Update
 	updateSnake: () => state => ({
@@ -95,7 +97,8 @@ const actions = {
 		(collision(state.snake[0], state.apple)
 			? [ action('eatApple'),
 				action('relocateApple'),
-				action('updateScore', 10) ]
+				action('updateScore', 10),
+				action('updateSpeed') ]
 			: []
 		),
 	eatApple: () => state => ({
@@ -109,6 +112,12 @@ const actions = {
 	updateScore: value => state => ({
 		...state,
 		score: state.score + value
+	}),
+	updateSpeed: () => state => ({
+		...state,
+		update_interval: (state.score % 100 === 0
+			? max(50, state.update_interval - 10)
+			: state.update_interval)
 	}),
 	updateIsRunning: value => state => ({
 		...state,
@@ -136,9 +145,7 @@ const isOutOfBounds = ({ x, y }) =>
 	x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT
 
 const selfCollision = ([ head, ...tail ]) =>
-	tail.some(({ x, y }) =>
-		x === head.x && y === head.y
-	)
+    tail.some(cell => collision(head, cell))
 
 const updateSnake = (snake, direction) => {
 	for (let i = snake.length - 1; i > 0; i--) {
@@ -199,13 +206,13 @@ const score_style = {
 	opacity: 0.8,
 }
 
-const Score = state =>
+const Score = score =>
 	g({ key: 'score' }, [
 		text({
 			style: score_style,
 			x: 5,
 			y: 20,
-		}, state)
+		}, `Score: ${score}`)
 	])
 
 const game_over_style = {
