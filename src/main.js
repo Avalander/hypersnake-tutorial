@@ -47,11 +47,20 @@ const randInt = (from, to) =>
 const max = (a, b) =>
 	a > b ? a : b
 
-const createApple = () =>
+const randomPoint = () =>
 	({
 		x: randInt(0, WIDTH/SIZE) * SIZE,
 		y: randInt(0, HEIGHT/SIZE) * SIZE,
 	})
+
+const ensureNotForbidden = (forbidden, point) =>
+	(forbidden.some(cell => collision(point, cell))
+		? ensureNotForbidden(forbidden, randomPoint())
+		: point
+	)
+
+const createApple = snake =>
+	ensureNotForbidden(snake, randomPoint())
 
 const state = {
 	snake: [
@@ -61,7 +70,7 @@ const state = {
 	],
 	direction: 'right',
 	next_direction: 'right',
-	apple: createApple(),
+	apple: { x: 20 * SIZE, y: 4 * SIZE },
 	score: 0,
 	is_running: true,
 	update_interval: 150,
@@ -107,7 +116,7 @@ const actions = {
 	}),
 	relocateApple: () => state => ({
 		...state,
-		apple: createApple(),
+		apple: createApple(state.snake),
 	}),
 	updateScore: value => state => ({
 		...state,
