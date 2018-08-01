@@ -41,9 +41,15 @@ const OPPOSITE_DIRECTION = {
 	right: 'left',
 }
 
+const APPLE_POINTS =
+	[ 0, 5, 5, 10, 10, 10, 10, 10, 20, 20, 30 ]
+
 
 const randInt = (from, to) =>
 	Math.floor(Math.random() * (to - from) + from)
+
+const choose = options =>
+	options[randInt(0, options.length)]
 
 const max = (a, b) =>
 	a > b ? a : b
@@ -60,8 +66,16 @@ const ensureNotForbidden = (forbidden, point) =>
 		: point
 	)
 
+const withScore = point =>
+	({
+		...point,
+		score: choose(APPLE_POINTS),
+	})
+
 const createApple = snake =>
-	ensureNotForbidden(snake, randomPoint())
+	withScore(
+		ensureNotForbidden(snake, randomPoint())
+	)
 
 const initState = () => ({
 	snake: [
@@ -71,7 +85,7 @@ const initState = () => ({
 	],
 	direction: 'right',
 	next_direction: 'right',
-	apple: { x: 20 * SIZE, y: 4 * SIZE },
+	apple: { x: 20 * SIZE, y: 4 * SIZE, score: 10 },
 	score: 0,
 	is_running: true,
 	update_interval: 150,
@@ -116,7 +130,7 @@ const actions = {
 		(collision(state.snake[0], state.apple)
 			? [ action('eatApple'),
 				action('relocateApple'),
-				action('updateScore', 10),
+				action('updateScore', state.apple.score),
 				action('updateSpeed') ]
 			: []
 		),
