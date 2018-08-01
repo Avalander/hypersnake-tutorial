@@ -26,13 +26,6 @@ const DIRECTIONS = {
 	down: { x: 0, y: 1 },
 }
 
-const KEY_TO_DIRECTION = {
-	ArrowUp: 'up',
-	ArrowDown: 'down',
-	ArrowLeft: 'left',
-	ArrowRight: 'right',
-}
-
 const KEY_TO_ACTION = {
 	ArrowUp: () => action('changeDirection', 'up'),
 	ArrowDown: () => action('changeDirection', 'down'),
@@ -174,13 +167,12 @@ const selfCollision = ([ head, ...tail ]) =>
     tail.some(cell => collision(head, cell))
 
 const updateSnake = (snake, direction) => {
-	for (let i = snake.length - 1; i > 0; i--) {
-		snake[i].x = snake[i - 1].x
-		snake[i].y = snake[i - 1].y
-	}
+	const [ head ] = snake
+	const tail = snake.pop()
 
-	snake[0].x += SIZE * DIRECTIONS[direction].x
-	snake[0].y += SIZE * DIRECTIONS[direction].y
+	tail.x = head.x + SIZE * DIRECTIONS[direction].x
+	tail.y = head.y + SIZE * DIRECTIONS[direction].y
+	snake.unshift(tail)
 
 	return snake
 }
