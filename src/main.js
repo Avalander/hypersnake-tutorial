@@ -33,6 +33,14 @@ const KEY_TO_DIRECTION = {
 	ArrowRight: 'right',
 }
 
+const KEY_TO_ACTION = {
+	ArrowUp: () => action('changeDirection', 'up'),
+	ArrowDown: () => action('changeDirection', 'down'),
+	ArrowLeft: () => action('changeDirection', 'left'),
+	ArrowRight: () => action('changeDirection', 'right'),
+	r: () => action('restartIfOver'),
+}
+
 const OPPOSITE_DIRECTION = {
 	up: 'down',
 	down: 'up',
@@ -62,7 +70,7 @@ const ensureNotForbidden = (forbidden, point) =>
 const createApple = snake =>
 	ensureNotForbidden(snake, randomPoint())
 
-const state = {
+const initState = () => ({
 	snake: [
 		{ x: 3 * SIZE, y: 3 * SIZE},
 		{ x: 2 * SIZE, y: 3 * SIZE},
@@ -74,7 +82,9 @@ const state = {
 	score: 0,
 	is_running: true,
 	update_interval: 150,
-}
+})
+
+const state = initState()
 
 const actions = {
 	// Game lifecycle
@@ -93,6 +103,13 @@ const actions = {
 			? action('updateIsRunning', false)
 			: delay(state.update_interval, 'frame')
 		),
+	restartIfOver: () => state =>
+		(state.is_running
+			? []
+			: [ action('reset'),
+				action('frame')]
+		),
+	reset: () => state => initState(),
 	// Update
 	updateSnake: () => state => ({
 		...state,
@@ -133,9 +150,9 @@ const actions = {
 		is_running: value,
 	}),
 	// Keyboard
-	keyPressed: ({ key }) =>
-		(Object.keys(KEY_TO_DIRECTION).includes(key)
-			? [ action('changeDirection', KEY_TO_DIRECTION[key]) ]
+	keyPressed: ({ key }) =>
+		(Object.keys(KEY_TO_ACTION).includes(key)
+			? KEY_TO_ACTION[key]()
 			: []
 		),
 	changeDirection: direction => state => ({
@@ -231,7 +248,7 @@ const game_over_style = {
 		opacity: 0.8,
 		'text-anchor': 'middle',
 	},
-	score: {
+	text: {
 		font: '30px sans-seriff',
 		fill: '#fff',
 		opacity: 0.8,
@@ -251,9 +268,13 @@ const GameOver = score =>
 			x: WIDTH/2, y: 100,
 		}, 'Game Over'),
 		text({
-			style: game_over_style.score,
+			style: game_over_style.text,
 			x: WIDTH/2, y: 160,
 		}, `Score: ${score}`),
+		text({
+			style: game_over_style.text,
+			x: WIDTH/2, y: 200,
+		}, `Press 'R' to restart`),
 	])
 
 const game = withFx(app) (state, actions, view, document.body)
