@@ -42,7 +42,7 @@ const OPPOSITE_DIRECTION = {
 }
 
 const APPLE_POINTS =
-	[ 0, 5, 5, 10, 10, 10, 10, 10, 20, 20, 30 ]
+	[ 0, 5, 5, 10, 10, 10, 10, 10, 10, 20, 20, 30 ]
 
 
 const randInt = (from, to) =>
@@ -131,7 +131,7 @@ const actions = {
 			? [ action('eatApple'),
 				action('relocateApple'),
 				action('updateScore', state.apple.score),
-				action('updateSpeed') ]
+				action('updateSpeed', state.score) ]
 			: []
 		),
 	eatApple: () => state => ({
@@ -146,9 +146,9 @@ const actions = {
 		...state,
 		score: state.score + value
 	}),
-	updateSpeed: () => state => ({
+	updateSpeed: old_score => state => ({
 		...state,
-		update_interval: (state.score % 100 === 0
+		update_interval: (Math.floor(state.score / 100) > Math.floor(old_score)
 			? max(50, state.update_interval - 10)
 			: state.update_interval)
 	}),
