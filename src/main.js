@@ -79,9 +79,9 @@ const createApple = snake =>
 
 const initState = () => ({
 	snake: [
-		{ x: 3 * SIZE, y: 3 * SIZE},
-		{ x: 2 * SIZE, y: 3 * SIZE},
-		{ x: 1 * SIZE, y: 3 * SIZE},
+		{ x: 3 * SIZE, y: 3 * SIZE },
+		{ x: 2 * SIZE, y: 3 * SIZE },
+		{ x: 1 * SIZE, y: 3 * SIZE },
 	],
 	direction: 'right',
 	next_direction: 'right',
@@ -148,7 +148,7 @@ const actions = {
 	}),
 	updateSpeed: old_score => state => ({
 		...state,
-		update_interval: (Math.floor(state.score / 100) > Math.floor(old_score)
+		update_interval: (Math.floor(state.score / 100) > Math.floor(old_score / 100)
 			? max(50, state.update_interval - 10)
 			: state.update_interval)
 	}),
